@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace ECommerceApp.Services.AuthService.Dara;
+namespace ECommerceApp.Services.AuthService.Data;
 
 public class AppDBContext : IdentityDbContext<IdentityUser>
 {

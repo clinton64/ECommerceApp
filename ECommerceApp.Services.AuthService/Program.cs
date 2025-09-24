@@ -26,6 +26,7 @@ if (app.Environment.IsDevelopment())
 	app.UseSwaggerUI();
 }
 
+SeedDB();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
@@ -33,3 +34,14 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+
+// Initialize database
+void SeedDB()
+{
+	using (var scope = app.Services.CreateScope())
+	{
+		var dBInitializer = scope.ServiceProvider.GetRequiredService<IDBInitializer>();
+		dBInitializer.initialize();
+	}
+}
