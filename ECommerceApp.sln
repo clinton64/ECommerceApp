@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36414.22 d17.14
+VisualStudioVersion = 17.14.36414.22
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FrontEnd", "FrontEnd", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 EndProject
@@ -20,6 +20,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECommerceApp.Services.OrderService", "ECommerceApp.Services.OrderService\ECommerceApp.Services.OrderService.csproj", "{D394E71B-F001-45AE-86EF-0039E4383E7A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECommerceApp.Services.CartService", "ECommerceApp.Services.CartService\ECommerceApp.Services.CartService.csproj", "{F35049D6-FD71-4C48-8D6A-7EAE24A4F64D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{A8F46A27-2FCE-4ECE-A633-ED3F357215C2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECommerceApp.Tests.AuthService.Test", "ECommerceApp.Tests.AuthService.Test\ECommerceApp.Tests.AuthService.Test.csproj", "{4D0A7306-856E-4BEE-A7C4-B1C7FF628BF0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +59,10 @@ Global
 		{F35049D6-FD71-4C48-8D6A-7EAE24A4F64D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F35049D6-FD71-4C48-8D6A-7EAE24A4F64D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F35049D6-FD71-4C48-8D6A-7EAE24A4F64D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4D0A7306-856E-4BEE-A7C4-B1C7FF628BF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D0A7306-856E-4BEE-A7C4-B1C7FF628BF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D0A7306-856E-4BEE-A7C4-B1C7FF628BF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D0A7306-856E-4BEE-A7C4-B1C7FF628BF0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -67,6 +75,7 @@ Global
 		{B47BF7C2-5F76-4B9C-A961-031AE29F5139} = {D4BB27F1-1716-4E6C-A21A-4D05384BDF21}
 		{D394E71B-F001-45AE-86EF-0039E4383E7A} = {D4BB27F1-1716-4E6C-A21A-4D05384BDF21}
 		{F35049D6-FD71-4C48-8D6A-7EAE24A4F64D} = {D4BB27F1-1716-4E6C-A21A-4D05384BDF21}
+		{4D0A7306-856E-4BEE-A7C4-B1C7FF628BF0} = {A8F46A27-2FCE-4ECE-A633-ED3F357215C2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {610765CF-08F2-4F76-9831-B315A968E05F}
