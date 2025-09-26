@@ -1,6 +1,9 @@
 using ECommerceApp.Services.AuthService.Data;
+using ECommerceApp.Services.AuthService.Service;
+using ECommerceApp.Services.AuthService.Service.IService;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -15,7 +18,9 @@ builder.Services.AddDbContext<AppDBContext>(options =>
 });
 
 builder.Services.AddScoped<ITokenGenerator, TokenGenerator>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IDBInitializer, DBInitializer>();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
