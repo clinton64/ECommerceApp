@@ -11,10 +11,12 @@ namespace ECommerceApp.Web.Service;
 public class BaseService : IBaseService
 {
 	private readonly IHttpClientFactory _httpClientFactory;
+	private readonly ITokenManager _tokenManager;
 
-	public BaseService(IHttpClientFactory httpClientFactory)
+	public BaseService(IHttpClientFactory httpClientFactory, ITokenManager tokenManager)
 	{
 		_httpClientFactory = httpClientFactory;
+		_tokenManager = tokenManager;
 	}
 	public async Task<ResponseDto?> SendAsync(RequestDto requestDto, bool withBearer = true)
 	{
@@ -25,6 +27,10 @@ public class BaseService : IBaseService
 		message.RequestUri = new Uri(requestDto.Url);
 
 		// token
+		if(withBearer)
+		{
+			message.Headers.Add("Authorization", $"Bearer {_tokenManager.GetToken()}");
+		}
 
 		switch (requestDto.ApiType)
 		{
