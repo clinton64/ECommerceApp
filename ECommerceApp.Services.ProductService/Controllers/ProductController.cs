@@ -1,13 +1,16 @@
 ﻿using AutoMapper;
+using ECommerceApp.Services.CouponService.Utility;
 using ECommerceApp.Services.ProductService.Data;
 using ECommerceApp.Services.ProductService.Models;
 using ECommerceApp.Services.ProductService.Models.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ECommerceApp.Services.ProductService.Controllers
 {
 	[Route("api/Product")]
 	[ApiController]
+	[Authorize]
 	public class ProductController : ControllerBase
 	{
 		private readonly AppDbContext _context;
@@ -55,6 +58,7 @@ namespace ECommerceApp.Services.ProductService.Controllers
 		}
 
 		[HttpPost]
+		[Authorize(Roles = SD.Role_User_Admin + ","  + SD.Role_User_Manager)]
 		public ResponseDto Post([FromForm] ProductDto productDto)
 		{
 			try
@@ -98,6 +102,7 @@ namespace ECommerceApp.Services.ProductService.Controllers
 		}
 
 		[HttpPut]
+		[Authorize(Roles = SD.Role_User_Admin + "," + SD.Role_User_Manager)]
 		public ResponseDto Put([FromForm] ProductDto productDto)
 		{
 			try
@@ -140,6 +145,7 @@ namespace ECommerceApp.Services.ProductService.Controllers
 
 		[HttpDelete]
 		[Route("{id:int}")]
+		[Authorize(Roles = SD.Role_User_Admin + "," + SD.Role_User_Manager)]
 		public ResponseDto Delete(int id)
 		{
 			try
