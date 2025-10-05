@@ -1,8 +1,8 @@
 ﻿using ECommerceApp.Web.Models;
 using ECommerceApp.Web.Service.IService;
-using ECommerceApp.Web.Utility;
 using Newtonsoft.Json;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Text;
 using static ECommerceApp.Web.Utility.StaticData;
 
@@ -23,7 +23,14 @@ public class BaseService : IBaseService
 		HttpClient client = _httpClientFactory.CreateClient("ECommerceAPI");
 		HttpRequestMessage message = new HttpRequestMessage();
 
-		message.Headers.Add("Accept", "application/json");
+		if (requestDto.ContentType == ContentType.MultipartFormData)
+		{
+			message.Headers.Add("Accept", "*/*");
+		}
+		else
+		{
+			message.Headers.Add("Accept", "application/json");
+		}
 		message.RequestUri = new Uri(requestDto.Url);
 
 		// token
@@ -32,26 +39,50 @@ public class BaseService : IBaseService
 			message.Headers.Add("Authorization", $"Bearer {_tokenManager.GetToken()}");
 		}
 
-		switch (requestDto.ApiType)
+		if(requestDto.ContentType == ContentType.MultipartFormData)
 		{
-			case ApiType.POST:
-				message.Method = HttpMethod.Post;
-				break;
-			case ApiType.PUT:
-				message.Method = HttpMethod.Put;
-				break;
-			case ApiType.DELETE:
-				message.Method = HttpMethod.Delete;
-				break;
-			default:
-				message.Method = HttpMethod.Get;
-				break;
+			var content = new MultipartFormDataContent();
+			foreach(var prop in requestDto.Data.GetType().GetProperties())
+			{
+				var propValue = prop.GetValue(requestDto.Data);
+				if (propValue is IFormFile file)
+				{
+					var streamContent = new StreamContent(file.OpenReadStream());
+					streamContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
+					content.Add(streamContent, prop.Name, file.FileName);
+				}
+				else
+				{
+					if (propValue != null)
+						content.Add(new StringContent(propValue.ToString()), prop.Name);
+				}
+			}
+			message.Content = content;
+		}
+		else
+		{
+			if (requestDto.Data != null)
+			{
+				message.Content = new StringContent(JsonConvert.SerializeObject(requestDto.Data), Encoding.UTF8, "application/json");
+			}
 		}
 
-		if (requestDto.Data != null)
-		{
-			message.Content = new StringContent(JsonConvert.SerializeObject(requestDto.Data), Encoding.UTF8, "application/json");
-		}
+			switch (requestDto.ApiType)
+			{
+				case ApiType.POST:
+					message.Method = HttpMethod.Post;
+					break;
+				case ApiType.PUT:
+					message.Method = HttpMethod.Put;
+					break;
+				case ApiType.DELETE:
+					message.Method = HttpMethod.Delete;
+					break;
+				default:
+					message.Method = HttpMethod.Get;
+					break;
+			}
+
 
 		HttpResponseMessage? apiResponse = await client.SendAsync(message);
 
