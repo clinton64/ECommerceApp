@@ -59,7 +59,7 @@ namespace ECommerceApp.Services.ProductService.Controllers
 
 		[HttpPost]
 		[Authorize(Roles = SD.Role_User_Admin + ","  + SD.Role_User_Manager)]
-		public ResponseDto Post([FromForm] ProductDto productDto)
+		public ResponseDto Post(ProductDto productDto)
 		{
 			try
 			{
@@ -67,29 +67,29 @@ namespace ECommerceApp.Services.ProductService.Controllers
 				_context.Products.Add(product);
 				_context.SaveChanges();
 
-				if(productDto.Image != null)
+				if (productDto.Image != null)
 				{
-					string fileName = product.Id + Path.GetExtension(productDto.Image.FileName);
-					var filePath = @"\wwwroot\ProductImages\" + fileName;
-
-					// Delete if any existing file
-					var directory = Path.Combine(Directory.GetCurrentDirectory(), filePath);
-					var existingFile = new FileInfo(directory);
-					if (existingFile.Exists)
+					var uploadDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "ProductImages");
+					if (!Directory.Exists(uploadDir))
 					{
-						existingFile.Delete();
+						Directory.CreateDirectory(uploadDir);
 					}
-					using (var stream = new FileStream(directory, FileMode.Create))
+
+					string fileName = product.Id + Path.GetExtension(productDto.Image.FileName);
+					string filePath = Path.Combine(uploadDir, fileName);
+
+					using (var stream = new FileStream(filePath, FileMode.Create))
 					{
 						productDto.Image.CopyTo(stream);
 					}
 
-					var baseUrl = $"{this.Request.Scheme}://{this.Request.Host.Value}{this.Request.PathBase.Value}";
-					product.ImageUrl = baseUrl + "/ProductImages/" + fileName;
+					var baseUrl = $"{Request.Scheme}://{Request.Host}";
+					product.ImageUrl = $"{baseUrl}/ProductImages/{fileName}";
 					product.ImageLocalPath = filePath;
+
+					_context.Products.Update(product);
+					_context.SaveChanges();
 				}
-				_context.Products.Update(product);
-				_context.SaveChanges();
 
 				_response.Result = _mapper.Map<ProductDto>(product);
 			}
@@ -103,45 +103,49 @@ namespace ECommerceApp.Services.ProductService.Controllers
 
 		[HttpPut]
 		[Authorize(Roles = SD.Role_User_Admin + "," + SD.Role_User_Manager)]
-		public ResponseDto Put([FromForm] ProductDto productDto)
+		public ResponseDto Put(ProductDto productDto)
 		{
 			try
 			{
-				var product = _mapper.Map<Product>(productDto);
+				var productDb = _context.Products.First(u => u.Id == productDto.Id);
+				_mapper.Map(productDto, productDb);
 
 				if (productDto.Image != null)
 				{
-					string fileName = product.Id + Path.GetExtension(productDto.Image.FileName);
-					var filePath = @"\wwwroot\ProductImages\" + fileName;
-
-					// Delete if any existing file
-					var directory = Path.Combine(Directory.GetCurrentDirectory(), filePath);
-					var existingFile = new FileInfo(directory);
-					if (existingFile.Exists)
+					var uploadDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "ProductImages");
+					if (!Directory.Exists(uploadDir))
 					{
-						existingFile.Delete();
+						Directory.CreateDirectory(uploadDir);
 					}
-					using (var stream = new FileStream(directory, FileMode.Create))
+
+					string fileName = productDb.Id + Path.GetExtension(productDto.Image.FileName);
+					string filePath = Path.Combine(uploadDir, fileName);
+
+					using (var stream = new FileStream(filePath, FileMode.Create))
 					{
 						productDto.Image.CopyTo(stream);
 					}
 
-					var baseUrl = $"{this.Request.Scheme}://{this.Request.Host.Value}{this.Request.PathBase.Value}";
-					product.ImageUrl = baseUrl + "/ProductImages/" + fileName;
-					product.ImageLocalPath = filePath;
-				}
-				_context.Products.Update(product);
-				_context.SaveChanges();
+					var baseUrl = $"{Request.Scheme}://{Request.Host}";
+					productDb.ImageUrl = $"{baseUrl}/ProductImages/{fileName}";
+					productDb.ImageLocalPath = filePath;
 
-				_response.Result = _mapper.Map<ProductDto>(product);
+					_context.Products.Update(productDb);
+					_context.SaveChanges();
+				}
+
+				_context.SaveChanges();
+				_response.Result = _mapper.Map<ProductDto>(productDb);
 			}
 			catch (Exception ex)
 			{
 				_response.IsSuccess = false;
 				_response.Message = ex.Message;
 			}
+
 			return _response;
 		}
+
 
 		[HttpDelete]
 		[Route("{id:int}")]

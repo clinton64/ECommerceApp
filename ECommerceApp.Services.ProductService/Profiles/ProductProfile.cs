@@ -2,7 +2,7 @@
 using ECommerceApp.Services.ProductService.Models;
 using ECommerceApp.Services.ProductService.Models.DTO;
 
-namespace ECommerceApp.Services.CouponService.Profiles;
+namespace ECommerceApp.Services.ProductService.Profiles;
 
 public class ProductProfile : Profile
 {
