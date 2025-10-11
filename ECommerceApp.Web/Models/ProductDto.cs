@@ -14,4 +14,6 @@ public class ProductDto
 	public string? ImageLocalPath { get; set; } = string.Empty;
 
 	public IFormFile? Image { get; set; }
+
+	public int Count { get; set; } = 1;
 }

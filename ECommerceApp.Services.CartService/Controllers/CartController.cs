@@ -3,6 +3,7 @@ using ECommerceApp.Services.CartService.Data;
 using ECommerceApp.Services.CartService.Models;
 using ECommerceApp.Services.CartService.Models.DTO;
 using ECommerceApp.Services.CartService.Service.IService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +11,7 @@ namespace ECommerceApp.Services.CartService.Controllers;
 
 [Route("api/cart")]
 [ApiController]
+[Authorize]
 public class CartController : ControllerBase
 {
 	private ResponseDto _response;
