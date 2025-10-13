@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using ECommerceApp.Web.Utility
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -28,16 +29,33 @@
                                 <i class="bi bi-house-door me-1"></i> Home
                             </a>
                         </li>
-                        @if (User.Identity.IsAuthenticated)
+
+                        @if (User.IsInRole(StaticData.Role_User_Admin))
                         {
+                            <!-- Manage Dropdown -->
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle text-white fw-semibold" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="bi bi-gear-fill me-1"></i> Manage
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end shadow rounded-3">
                                     <li><a class="dropdown-item" asp-controller="Coupon" asp-action="Index"><i class="bi bi-ticket-perforated me-2"></i> Coupons</a></li>
-                                    <li><a class="dropdown-item" asp-controller="Product" asp-action="Index" ><i class="bi bi-box-seam me-2"></i> Products</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Product" asp-action="Index"><i class="bi bi-box-seam me-2"></i> Products</a></li>
                                 </ul>
+                            </li>
+                        }
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <!-- 🛒 Cart Nav Item -->
+                            <li class="nav-item ms-2">
+                                <a class="nav-link text-white fw-semibold position-relative" asp-controller="Cart" asp-action="Index">
+                                    <i class="bi bi-cart3 me-1"></i> Cart
+                                    <!-- Optional dynamic badge -->
+                                    @* <span id="cart-count-badge"
+                                          class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                                          style="font-size: 0.7rem;">
+                                        0
+                                    </span> *@
+                                </a>
                             </li>
                         }
                     </ul>
