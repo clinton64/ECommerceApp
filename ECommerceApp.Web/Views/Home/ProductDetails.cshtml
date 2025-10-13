@@ -1,0 +1,66 @@
+﻿@model ProductDto
+@{
+    ViewData["Title"] = "Product Details";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+        <!-- Header -->
+        <div class="card-header bg-gradient text-white" style="background: linear-gradient(90deg, #6366f1, #3b82f6);">
+            <h3 class="fw-bold mb-0 text-center">
+                <i class="bi bi-box-seam me-2"></i> Product Details
+            </h3>
+        </div>
+
+        <!-- Body -->
+        <div class="card-body p-4">
+            <div class="row g-4 align-items-center">
+                <!-- Product Image -->
+                <div class="col-md-5 text-center">
+                    <img src="@(Model.ImageUrl)"
+                         alt="@Model.Name"
+                         class="img-fluid rounded-4 shadow-sm border"
+                         style="max-height: 400px; object-fit: cover;">
+                </div>
+
+                <!-- Product Info -->
+                <div class="col-md-7">
+                    <h2 class="fw-bold mb-3">@Model.Name</h2>
+
+                    <div class="mb-2">
+                        <span class="badge bg-primary px-3 py-2 rounded-pill fs-6">@Model.Category</span>
+                    </div>
+
+                    <p class="text-muted mt-3 mb-4 fs-5">@Model.Description</p>
+
+                    <h4 class="fw-bold text-success mb-3">@Model.Price.ToString("C")</h4>
+
+                    <form method="post" class="mt-4">
+                        <input type="hidden" asp-for="Id" />
+
+                        <div class="d-flex align-items-center mb-4" style="max-width: 200px;">
+                            <label class="me-3 fw-semibold">Quantity:</label>
+                            <input asp-for="Count" type="number" class="form-control text-center rounded-pill shadow-sm" min="1" value="1" />
+                        </div>
+
+                        <div class="d-flex gap-3">
+                            <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">
+                                <i class="bi bi-arrow-left-circle me-2"></i> Back to Products
+                            </a>
+
+                            <button type="submit" class="btn btn-success rounded-pill shadow-sm px-5">
+                                <i class="bi bi-cart-plus-fill me-2"></i> Add to Cart
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
