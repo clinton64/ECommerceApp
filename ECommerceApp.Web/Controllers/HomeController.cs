@@ -1,5 +1,6 @@
 using ECommerceApp.Web.Models;
 using ECommerceApp.Web.Service.IService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Diagnostics;
@@ -37,6 +38,7 @@ namespace ECommerceApp.Web.Controllers
 				return View(products);
 		}
 
+		[Authorize]
 		public async Task<IActionResult> ProductDetails(int productId)
 		{
 			ProductDto product = new();
@@ -78,19 +80,6 @@ namespace ECommerceApp.Web.Controllers
 				TempData["error"] = response?.Message;
 			}
 			return View(product);
-		}
-
-		[HttpGet]
-		public async Task<IActionResult> AddToCart()
-		{
-			return View();
-		}
-
-		[HttpPost]
-		public async Task<IActionResult> AddToCart(CartDto cart)
-		{
-			await _cartService.UpsertCartAsync(cart);	
-			return View();
 		}
 
 		public IActionResult Privacy()
