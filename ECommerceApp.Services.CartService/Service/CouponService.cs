@@ -15,7 +15,7 @@ public class CouponService : ICouponService
 	public async Task<CouponDto> GetCoupon(string couponCode)
 	{
 		var client = _httpClientFactory.CreateClient("Coupon");
-		var apiResponse = await client.GetAsync($"api/coupon/{couponCode}");
+		var apiResponse = await client.GetAsync($"api/coupon/GetByCode/{couponCode}");
 		var response = JsonConvert.DeserializeObject<ResponseDto>(await apiResponse.Content.ReadAsStringAsync());
 		
 		if(response != null && response.IsSuccess)
