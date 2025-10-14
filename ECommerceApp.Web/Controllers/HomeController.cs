@@ -35,7 +35,7 @@ namespace ECommerceApp.Web.Controllers
 			{
 				TempData["error"] = response?.Message;
 			}
-				return View(products);
+			return View(products);
 		}
 
 		[Authorize]
@@ -73,7 +73,7 @@ namespace ECommerceApp.Web.Controllers
 			var response = await _cartService.UpsertCartAsync(cart);
 			if (response != null && response.IsSuccess)
 			{
-				RedirectToAction(nameof(Index));
+				return RedirectToAction(nameof(Index));
 			}
 			else
 			{
