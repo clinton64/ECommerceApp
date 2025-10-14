@@ -1,6 +1,7 @@
 ﻿using ECommerceApp.Services.AuthService.Data;
 using ECommerceApp.Services.AuthService.Models.DTO;
 using ECommerceApp.Services.AuthService.Service.IService;
+using ECommerceApp.Services.AuthService.Utility;
 using Microsoft.AspNetCore.Identity;
 
 namespace ECommerceApp.Services.AuthService.Service;
@@ -55,6 +56,7 @@ public class AuthService : IAuthService
 			if (result.Succeeded)
 			{
 				var createdUser = _context.Users.First(u => u.Email == request.Email);
+				await _userManager.AddToRoleAsync(createdUser, SD.Role_User_Customer);
 				return string.Empty;
 			}
 			return result.Errors.FirstOrDefault().Description;

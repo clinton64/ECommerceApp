@@ -30,7 +30,7 @@ namespace ECommerceApp.Services.AuthService.Controllers
 			return Ok(_response) ;
 		}
 
-		/*[HttpPost("register")]
+		[HttpPost("register")]
 		public async Task<IActionResult> Register(RegistrationRequest request)
 		{
 			var errorMessage = await _authService.Register(request);
@@ -40,8 +40,8 @@ namespace ECommerceApp.Services.AuthService.Controllers
 				_response.Message = errorMessage;
 				return BadRequest(_response);
 			}
-			await _messageBus.PublishMessage(request.Email, _configuration.GetValue<string>("TopicAndQueueNames:RegisterUserQueue"));
+			//await _messageBus.PublishMessage(request.Email, _configuration.GetValue<string>("TopicAndQueueNames:RegisterUserQueue"));
 			return Ok(_response);
-		}*/
+		}
 	}
 }
