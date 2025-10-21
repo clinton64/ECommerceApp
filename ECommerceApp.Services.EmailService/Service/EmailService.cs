@@ -2,18 +2,17 @@
 using ECommerceApp.Services.EmailService.Models;
 using ECommerceApp.Services.EmailService.Models.DTO;
 using ECommerceApp.Services.EmailService.Service.IService;
-using Microsoft.EntityFrameworkCore;
 using System.Text;
 
 namespace ECommerceApp.Services.EmailService.Service;
 
 public class EmailService : IEmailService
 {
-    private DbContextOptions<AppDbContext> _dbOptions;
+    private readonly AppDbContext _dbContext;
 
-    public EmailService(DbContextOptions<AppDbContext> dbOptions)
+    public EmailService(AppDbContext dbContext)
     {
-        _dbOptions = dbOptions;
+        _dbContext = dbContext;
     }
 
     public async Task EmailCartAndLog(CartDto cartDto)
@@ -27,7 +26,7 @@ public class EmailService : IEmailService
         foreach (var item in cartDto.CartDetails)
         {
             message.Append("<li>");
-            message.Append(item.Product.Name + " x " + item.Count);
+            message.Append(item.ProductId + " x " + item.Count);
             message.Append("</li>");
         }
         message.Append("</ul>");
@@ -57,9 +56,8 @@ public class EmailService : IEmailService
                 EmailSent = DateTime.Now,
                 Message = message
             };
-            await using var _db = new AppDbContext(_dbOptions);
-            await _db.EmailLoggers.AddAsync(emailLog);
-            await _db.SaveChangesAsync();
+            await _dbContext.EmailLoggers.AddAsync(emailLog);
+            await _dbContext.SaveChangesAsync();
             return true;
         }
         catch (Exception ex)
