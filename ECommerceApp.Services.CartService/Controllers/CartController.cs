@@ -146,10 +146,6 @@ public class CartController : ControllerBase
 			}
 
 			_response.Result = cart;
-
-			// Email admin about cart update
-			var cartMessageQueue = _configuration.GetValue<string>("TopicAndQueueNames:CartQueue");
-			await _messageSender.SendMessageAsync(cart, cartMessageQueue);
 		}
 		catch (Exception ex)
 		{
@@ -160,5 +156,23 @@ public class CartController : ControllerBase
 		return _response;
 	}
 
+	[HttpPost("EmailCartRequest")]
+	public async Task<ResponseDto> EmailCartRequest(CartDto cart)
+	{
+		try
+		{
+			// Email admin about cart update
+			var cartMessageQueue = _configuration.GetValue<string>("TopicAndQueueNames:CartQueue");
+			await _messageSender.SendMessageAsync(cart, cartMessageQueue);
+
+			_response.Result = true;
+		}
+		catch(Exception ex)
+		{
+			_response.IsSuccess = false;
+			_response.Message = ex.Message;
+		}
+		return _response;
+	}
 }
 

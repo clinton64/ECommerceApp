@@ -22,9 +22,14 @@ public class CartService : ICartService
 		});
 	}
 
-	public Task<ResponseDto?> EmailCart(CartDto cartDto)
+	public async Task<ResponseDto?> EmailCart(CartDto cartDto)
 	{
-		throw new NotImplementedException();
+		return await _baseService.SendAsync(new RequestDto
+		{
+			ApiType = ApiType.POST,
+			Data = cartDto,
+			Url = CartAPIBase + "/api/cart/EmailCartRequest"
+		});
 	}
 
 	public async Task<ResponseDto?> GetCartByUserIdAsnyc(string userId)
