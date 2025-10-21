@@ -1,4 +1,5 @@
 using ECommerceApp.Services.CartService.Data;
+using ECommerceApp.Services.CartService.Messaging;
 using ECommerceApp.Services.CartService.Service;
 using ECommerceApp.Services.CartService.Service.IService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -17,6 +18,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<ICouponService, CouponService>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IRabbitMQMessageSender, RabbitMQMessageSender>();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ECommerceApp.Services.CartService.Service.HttpClientHandler>();
