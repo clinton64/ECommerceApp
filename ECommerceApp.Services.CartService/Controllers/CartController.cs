@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using ECommerceApp.Services.CartService.Data;
+using ECommerceApp.Services.CartService.Messaging;
 using ECommerceApp.Services.CartService.Models;
 using ECommerceApp.Services.CartService.Models.DTO;
 using ECommerceApp.Services.CartService.Service.IService;
@@ -19,14 +20,18 @@ public class CartController : ControllerBase
 	private readonly IMapper _mapper;
 	private readonly IProductService _productService;
 	private readonly ICouponService _couponService;
+	private readonly IRabbitMQMessageSender _messageSender;
+	private readonly IConfiguration _configuration;
 
-	public CartController(AppDbContext context, IMapper mapper, IProductService productService, ICouponService couponService)
+	public CartController(AppDbContext context, IMapper mapper, IProductService productService, ICouponService couponService, IRabbitMQMessageSender messageSender, IConfiguration configuration)
 	{
 		_response = new();
 		_context = context;
 		_mapper = mapper;
 		_productService = productService;
 		_couponService = couponService;
+		_messageSender = messageSender;
+		_configuration = configuration;
 	}
 	[HttpGet("GetCart/{userId}")]
 	public async Task<ResponseDto> GetCart(string userId)
@@ -141,6 +146,10 @@ public class CartController : ControllerBase
 			}
 
 			_response.Result = cart;
+
+			// Email admin about cart update
+			var cartMessageQueue = _configuration.GetValue<string>("TopicAndQueueNames:CartQueue");
+			await _messageSender.SendMessageAsync(cart, cartMessageQueue);
 		}
 		catch (Exception ex)
 		{
