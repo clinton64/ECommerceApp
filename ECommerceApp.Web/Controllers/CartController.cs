@@ -31,6 +31,18 @@ public class CartController : Controller
 		return View();
 	}
 
+	public async Task<IActionResult> RemoveItem(int cartDetailsId)
+	{
+		var response = await _cartService.RemoveFromCartAsync(cartDetailsId);
+		if(response != null && response.IsSuccess)
+		{
+			TempData["success"] = "Item Deleted Successfully";
+			return RedirectToAction(nameof(Index));
+		}
+
+		return View();
+	}
+
 	public async Task<IActionResult> EmailCart(CartDto cartDto)
 	{
 		var cart = await LoadCart();

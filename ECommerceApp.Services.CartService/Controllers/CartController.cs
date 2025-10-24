@@ -156,6 +156,33 @@ public class CartController : ControllerBase
 		return _response;
 	}
 
+	[HttpGet("DeleteItem/{cartDetailsId}")]
+	public async Task<ResponseDto> DeleteItem(int cartDetailsId)
+	{
+		try
+		{
+			var cartDetails = _context.CartDetails.AsNoTracking().First(_ => _.Id == cartDetailsId);
+			_context.CartDetails.Remove(cartDetails);
+
+			// If this is the only item in the cart, cart should also be deleted
+			var itemCount = _context.CartDetails.Where(c => c.CartHeaderId == cartDetails.CartHeaderId).Count();
+			if(itemCount == 0)
+			{
+				var cartHeader = _context.CartHeaders.AsNoTracking().First(c => c.Id == cartDetails.CartHeaderId);
+				_context.CartHeaders.Remove(cartHeader);
+			}
+
+			await _context.SaveChangesAsync();
+			_response.Result = true;
+		}
+		catch(Exception ex)
+		{
+			_response.IsSuccess = false;
+			_response.Message = ex.Message;
+		}
+		return _response;
+	}
+
 	[HttpPost("EmailCartRequest")]
 	public async Task<ResponseDto> EmailCartRequest(CartDto cart)
 	{

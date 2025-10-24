@@ -41,9 +41,13 @@ public class CartService : ICartService
 		});
 	}
 
-	public Task<ResponseDto?> RemoveFromCartAsync(int cartDetailsId)
+	public async Task<ResponseDto?> RemoveFromCartAsync(int cartDetailsId)
 	{
-		throw new NotImplementedException();
+		return await _baseService.SendAsync(new RequestDto
+		{
+			ApiType = ApiType.GET,
+			Url = CartAPIBase +  $"/api/cart/DeleteItem/{cartDetailsId}"
+		});
 	}
 
 	public async Task<ResponseDto?> UpsertCartAsync(CartDto cartDto)
