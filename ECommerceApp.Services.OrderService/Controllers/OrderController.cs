@@ -74,7 +74,6 @@ public class OrderController : ControllerBase
 		try
 		{
 			var orderHeaderDto = _mapper.Map<OrderHeaderDto>(cart.CartHeader);
-			orderHeaderDto.OrderTotal = cart.CartHeader.CartTotal;
 			orderHeaderDto.OrderDate = DateTime.Now;
 			orderHeaderDto.OrderStatus = SD.Status_Pending;
 			orderHeaderDto.OrderDetails = _mapper.Map<IEnumerable<OrderDetailDto>>(cart.CartDetails);

@@ -12,12 +12,17 @@ public class OrderProfile : Profile
 		CreateMap<OrderDetail, OrderDetailDto>().ReverseMap();
 
 		CreateMap<OrderHeaderDto, CartHeaderDto>()
-			.ForMember(m => m.CartTotal, m => m.MapFrom(src => src.OrderTotal)).ReverseMap();
+			.ForMember(m => m.CartTotal, m => m.MapFrom(src => src.OrderTotal))
+			.ForMember(dest => dest.Id, opt => opt.Ignore())
+			.ReverseMap()
+			.ForMember(dest => dest.Id, opt => opt.Ignore());
 
 		CreateMap<CartDetailsDto, OrderDetailDto>()
 			.ForMember(m => m.ProductName, m => m.MapFrom(src => src.Product.Name))
-			.ForMember(m => m.Price, m => m.MapFrom(src => src.Product.Price));
+			.ForMember(m => m.Price, m => m.MapFrom(src => src.Product.Price))
+			.ForMember(dest => dest.Id, opt => opt.Ignore());
 
-		CreateMap<OrderDetailDto, CartDetailsDto>();
+		CreateMap<OrderDetailDto, CartDetailsDto>()
+			.ForMember(dest => dest.Id, opt => opt.Ignore());
 	}
 }
