@@ -78,10 +78,15 @@ public class CartController : Controller
 		if (response != null && response.IsSuccess)
 		{
 			TempData["success"] = "Order placed successfully";
-			return RedirectToAction("Index", "Home");
+			return RedirectToAction(nameof(Confirmation));
 		}
 		return View(cartDto);
 	}
+
+	public async Task<IActionResult> Confirmation()
+	{
+		return View();
+	}	
 
 	private async Task<CartDto> LoadCart()
 	{

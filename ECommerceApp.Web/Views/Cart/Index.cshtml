@@ -14,7 +14,7 @@
         <div class="card-body p-4">
             @if (Model?.CartDetails != null && Model.CartDetails.Any())
             {
-                <form asp-action="Checkout" method="post">
+                <form asp-action="EmailCart" method="post">
                     <!-- Hidden CartHeader bindings -->
                     <input asp-for="CartHeader.Id" type="hidden" />
                     <input asp-for="CartHeader.UserId" type="hidden" />
@@ -144,10 +144,10 @@
                                                 <i class="bi bi-envelope-fill me-2"></i> Email Cart
                                             </button>
 
-                                            <button type="submit"
-                                                    class="btn btn-success rounded-pill px-4 py-2 fw-semibold shadow-sm transition-all">
+                                            <a asp-action="Checkout"
+                                               class="btn btn-success rounded-pill px-4 py-2 fw-semibold shadow-sm transition-all text-decoration-none">
                                                 <i class="bi bi-credit-card-2-front me-2"></i> Proceed to Checkout
-                                            </button>
+                                            </a>
                                         </div>
                                     </div>
 
