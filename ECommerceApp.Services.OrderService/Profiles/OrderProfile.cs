@@ -18,6 +18,6 @@ public class OrderProfile : Profile
 			.ForMember(m => m.ProductName, m => m.MapFrom(src => src.Product.Name))
 			.ForMember(m => m.Price, m => m.MapFrom(src => src.Product.Price));
 
-		CreateMap<OrderDetailDto, CartDetailsDto>()
+		CreateMap<OrderDetailDto, CartDetailsDto>();
 	}
 }
