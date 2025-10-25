@@ -9,10 +9,12 @@ namespace ECommerceApp.Web.Controllers;
 public class CartController : Controller
 {
 	private readonly ICartService _cartService;
+	private readonly IOrderService _orderService;
 
-	public CartController(ICartService cartService)
+	public CartController(ICartService cartService, IOrderService orderService)
 	{
 		_cartService = cartService;
+		_orderService = orderService;
 	}
 	public async Task<IActionResult> Index()
 	{
@@ -55,6 +57,30 @@ public class CartController : Controller
 			return RedirectToAction(nameof(Index));
 		}
 		return View();
+	}
+
+	public async Task<IActionResult> Checkout()
+	{
+		var cart = await LoadCart();
+		return View(cart);
+	}
+
+	[HttpPost]
+	public async Task<IActionResult> Checkout(CartDto cartDto)
+	{
+		var cart = await LoadCart();
+		cart.CartHeader.Name = cartDto.CartHeader.Name;
+		cart.CartHeader.Phone = cartDto.CartHeader.Phone;
+		cart.CartHeader.Email = cartDto.CartHeader.Email;
+
+
+		var response = await _orderService.PlaceOrder(cart);
+		if (response != null && response.IsSuccess)
+		{
+			TempData["success"] = "Order placed successfully";
+			return RedirectToAction("Index", "Home");
+		}
+		return View(cartDto);
 	}
 
 	private async Task<CartDto> LoadCart()
