@@ -1,5 +1,6 @@
 ﻿using ECommerceApp.Web.Models;
 using ECommerceApp.Web.Service.IService;
+using ECommerceApp.Web.Utility;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
@@ -77,15 +78,42 @@ public class CartController : Controller
 		var response = await _orderService.PlaceOrder(cart);
 		if (response != null && response.IsSuccess)
 		{
-			TempData["success"] = "Order placed successfully";
-			return RedirectToAction(nameof(Confirmation));
+			var orderHeader = JsonConvert.DeserializeObject<OrderHeaderDto>(Convert.ToString(response.Result));
+
+			var domain = Request.Scheme + "://" + Request.Host.Value + "/";
+
+			StripeRequestDto stripeRequest = new StripeRequestDto()
+			{
+				ApprovedUrl = domain + "cart/confirmation?orderId=" + orderHeader.Id,
+				CancelUrl = domain + "cart/checkout",
+				OrderHeader = orderHeader
+			};
+
+			var stripeResponse = await _orderService.CreateStripeSession(stripeRequest);
+			if(stripeResponse != null && stripeResponse.IsSuccess)
+			{
+				var stripeDto = JsonConvert.DeserializeObject<StripeRequestDto>(Convert.ToString(stripeResponse.Result));
+				if(stripeDto != null && stripeDto.StripeSessionUrl != null)
+					return Redirect(stripeDto.StripeSessionUrl);
+			}
 		}
 		return View(cartDto);
 	}
 
-	public async Task<IActionResult> Confirmation()
+	public async Task<IActionResult> Confirmation(int orderId)
 	{
-		return View();
+		var response = await _orderService.ValidateStripeSession(orderId);
+
+		if(response != null && response.IsSuccess)
+		{
+			var orderHeader = JsonConvert.DeserializeObject<OrderHeaderDto>(Convert.ToString(response.Result));
+			if(orderHeader != null && orderHeader.PaymentStatus == StaticData.Status_Approved)
+			{
+				//await _cartService.ClearCartAsync(orderHeader.UserId);
+				return View(orderId);
+			}
+		}	
+		return RedirectToAction(nameof(Checkout));
 	}	
 
 	private async Task<CartDto> LoadCart()
