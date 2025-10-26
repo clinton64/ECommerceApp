@@ -6,6 +6,8 @@ using ECommerceApp.Services.OrderService.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Stripe;
+using Stripe.Checkout;
 
 namespace ECommerceApp.Services.OrderService.Controllers;
 
@@ -85,6 +87,90 @@ public class OrderController : ControllerBase
 			_response.Result = orderHeaderDto;
 		}
 		catch (Exception ex)
+		{
+			_response.IsSuccess = false;
+			_response.Message = ex.Message;
+		}
+		return _response;
+	}
+
+	[HttpPost("createstripesession")]
+	public async Task<ResponseDto> CreateStripeSession(StripeRequestDto stripeRequest)
+	{
+		try
+		{
+			var options = new SessionCreateOptions
+			{
+				SuccessUrl = stripeRequest.ApprovedUrl,
+				CancelUrl = stripeRequest.CancelUrl,
+				LineItems = new List<SessionLineItemOptions>(),
+				PaymentMethodTypes = new List<string>
+				{
+					"card"
+				},
+				Mode = "payment"
+			};
+
+			foreach (var item in stripeRequest.OrderHeader.OrderDetails)
+			{
+				var sessionLineItem = new SessionLineItemOptions
+				{
+					PriceData = new SessionLineItemPriceDataOptions
+					{
+						Currency = "usd",
+						ProductData = new SessionLineItemPriceDataProductDataOptions
+						{
+							Name = item.ProductName,
+						},
+						UnitAmount = (long)(item.Price * 100),
+					},
+					Quantity = item.Count
+				};
+				options.LineItems.Add(sessionLineItem);
+			}
+			var service = new SessionService();
+			var session = service.Create(options);
+
+			stripeRequest.StripeSessionUrl = session.Url;
+			var orderHeader = _context.OrderHeaders.First(u => u.Id == stripeRequest.OrderHeader.Id);
+			orderHeader.StripteSessionId = session.Id;
+			await _context.SaveChangesAsync();
+
+			_response.Result = stripeRequest;
+		}
+		catch (Exception ex)
+		{
+			_response.IsSuccess = false;
+			_response.Message = ex.Message;
+		}
+		return _response;
+	}
+
+	[HttpGet("validatestripesession/{orderHeaderId}")]
+	public async Task<ResponseDto> ValidateStripeSession(int orderHeaderId)
+	{
+		try
+		{
+			var orderHeader = _context.OrderHeaders.First(u => u.Id == orderHeaderId);
+
+			var service = new SessionService();
+			Session session = service.Get(orderHeader.StripteSessionId);
+
+			var paymentIntentService = new PaymentIntentService();
+			PaymentIntent paymentIntent = paymentIntentService.Get(session.PaymentIntentId);
+
+			if (paymentIntent.Status.ToLower() == "succeeded")
+			{
+				orderHeader.OrderStatus = SD.Status_Approved;
+				orderHeader.PaymentStatus = SD.Status_Approved;
+				orderHeader.TransactionId = paymentIntent.Id;
+				orderHeader.StripePaymentIntentId = paymentIntent.Id;
+				await _context.SaveChangesAsync();
+
+				_response.Result = _mapper.Map<OrderHeader>(orderHeader);
+			}
+		}
+		catch( Exception ex)
 		{
 			_response.IsSuccess = false;
 			_response.Message = ex.Message;
