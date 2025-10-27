@@ -109,7 +109,7 @@ public class CartController : Controller
 			var orderHeader = JsonConvert.DeserializeObject<OrderHeaderDto>(Convert.ToString(response.Result));
 			if(orderHeader != null && orderHeader.PaymentStatus == StaticData.Status_Approved)
 			{
-				//await _cartService.ClearCartAsync(orderHeader.UserId);
+				await _cartService.ClearCartAsync(orderHeader.UserId);
 				return View(orderId);
 			}
 		}	

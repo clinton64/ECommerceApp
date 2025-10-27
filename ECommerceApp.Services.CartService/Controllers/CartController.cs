@@ -201,5 +201,27 @@ public class CartController : ControllerBase
 		}
 		return _response;
 	}
+
+	[HttpGet("ClearCart/{userId}")]
+	public async Task<ResponseDto> ClearCart(string userId)
+	{
+		try
+		{
+			var cartHeader = _context.CartHeaders.FirstOrDefault(c => c.UserId == userId);
+			if (cartHeader != null)
+			{
+				_context.CartDetails.RemoveRange(_context.CartDetails.Where(c => c.CartHeaderId == cartHeader.Id));
+				_context.CartHeaders.Remove(cartHeader);
+				await _context.SaveChangesAsync();
+			}
+			_response.Result = true;
+		}
+		catch(Exception ex)
+		{
+			_response.IsSuccess = false;
+			_response.Message = ex.Message;
+		}
+		return _response;
+	}
 }
 

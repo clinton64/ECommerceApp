@@ -59,4 +59,13 @@ public class CartService : ICartService
 			Url = CartAPIBase + "/api/cart/Upsert"
 		});
 	}
+
+	public async Task<ResponseDto?> ClearCartAsync(string userId)
+	{
+		return await _baseService.SendAsync(new RequestDto
+		{
+			ApiType = ApiType.GET,
+			Url = CartAPIBase + $"/api/cart/ClearCart/{userId}"
+		});
+	}
 }
