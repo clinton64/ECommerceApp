@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using ECommerceApp.Services.OrderService.Data;
+using ECommerceApp.Services.OrderService.Messaging;
 using ECommerceApp.Services.OrderService.Model;
 using ECommerceApp.Services.OrderService.Model.DTO;
 using ECommerceApp.Services.OrderService.Utility;
@@ -19,11 +20,15 @@ public class OrderController : ControllerBase
 	private ResponseDto _response;
 	private readonly AppDbContext _context;
 	private readonly IMapper _mapper;
-	public OrderController(AppDbContext context, IMapper mapper)
+	private readonly IRabbitMQMessageSender _messageSender;
+	private readonly IConfiguration _configuration;
+	public OrderController(AppDbContext context, IMapper mapper, IRabbitMQMessageSender messageSender, IConfiguration configuration)
 	{
 		_response = new ResponseDto();
 		_context = context;
 		_mapper = mapper;
+		_messageSender = messageSender;
+		_configuration = configuration;
 	}
 
 	[HttpGet("get")]
@@ -168,6 +173,13 @@ public class OrderController : ControllerBase
 				await _context.SaveChangesAsync();
 
 				_response.Result = _mapper.Map<OrderHeader>(orderHeader);
+
+				// Send message to RabbitMQ 
+				var queueName = _configuration.GetValue<string>("TopicAndQueueNames:OrderQueue");
+				var orderDetails = _context.OrderDetails.Where(o => o.OrderHeaderId == orderHeader.Id).ToList();
+				var orderHeaderDto = _mapper.Map<OrderHeaderDto>(orderHeader);
+				orderHeaderDto.OrderDetails = _mapper.Map<IEnumerable<OrderDetailDto>>(orderDetails);
+				_messageSender.SendMessage(orderHeaderDto, queueName);
 			}
 		}
 		catch( Exception ex)
