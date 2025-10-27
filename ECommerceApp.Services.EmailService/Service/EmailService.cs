@@ -34,10 +34,10 @@ public class EmailService : IEmailService
         await LogAndEmail(message.ToString(), cartDto.CartHeader.Email);
     }
 
-    public async Task LogOrderPlaced(RewardsMessage rewardsDto)
+    public async Task EmailOrderPlacedAndLog(OrderHeaderDto order)
     {
-	    string message = "New Order Placed. <br/> Order ID : " + rewardsDto.OrderId;
-	    await LogAndEmail(message, "chakmaclinton86@gmail.com");
+	    string message = "New Order Placed. <br/> Order ID : " + order.Id;
+	    await LogAndEmail(message, order.Email ?? "chakmaclinton86@gmail.com");
     }
 
     public async Task RegisterUserEmailAndLog(string email)

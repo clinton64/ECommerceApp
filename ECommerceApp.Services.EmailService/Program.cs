@@ -1,4 +1,5 @@
 using ECommerceApp.Services.EmailService.Data;
+using ECommerceApp.Services.EmailService.Messaging;
 using ECommerceApp.Services.EmailService.Service;
 using ECommerceApp.Services.EmailService.Service.IService;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<IEmailService, EmailService>();	
 builder.Services.AddHostedService<RabbitMQCartConsumer>();
+builder.Services.AddHostedService<RabbitMQOrderConsumer>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
